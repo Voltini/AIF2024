@@ -1,0 +1,6 @@
+data/
+weights/
+**.pyc
+runs/
+**.png
+flagged/
