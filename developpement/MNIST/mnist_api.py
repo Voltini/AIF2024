@@ -22,7 +22,7 @@ model_path = args.model_path
 
 model = MNISTNet().to(device)
 # Load the model
-model.load_state_dict(torch.load(model_path))
+model.load_state_dict(torch.load(model_path, map_location=device))
 model.eval()
 
 transform = transforms.Compose(
