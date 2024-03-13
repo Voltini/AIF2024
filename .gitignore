@@ -10,3 +10,5 @@ flagged/
 *.pickle
 *.pth
 *.ann
+
+kaggle.json
