@@ -4,3 +4,9 @@ weights/
 runs/
 **.png
 flagged/
+*.csv*
+*.zip
+*.jpg
+*.pickle
+*.pth
+*.ann
