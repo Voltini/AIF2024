@@ -2,11 +2,7 @@ import io
 import gradio as gr
 import requests
 import matplotlib.pyplot as plt
-import pandas as pd
 from PIL import Image
-
-DF_PATH = "./feature-path.pickle"
-df = pd.read_pickle(DF_PATH)
 
 
 def process_image(image):
@@ -34,5 +30,5 @@ def process_image(image):
 
 iface = gr.Interface(fn=process_image, inputs="image", outputs="plot")
 iface.launch(
-    server_name="0.0.0.0"
+    server_name="0.0.0.0", #server_port=80
 )  # the server will be accessible externally under this address

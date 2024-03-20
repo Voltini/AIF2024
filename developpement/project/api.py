@@ -10,14 +10,14 @@ from model import search
 device = torch.device("cpu")
 
 app = Flask(__name__)
-MODEL_PATH = "./model.pth"
-INDEX_PATH = "./rec_imdb.ann"
+MODEL_PATH = "model.pth"
+INDEX_PATH = "annoy_index.ann"
 DF_PATH = "./feature-path.pickle"
 
 index = AnnoyIndex(576, "angular")
 index.load(INDEX_PATH)
 transform = model.transform()
-model = torch.load(MODEL_PATH).cpu()
+model = torch.load(MODEL_PATH, map_location=torch.device("cpu"))
 df = pd.read_pickle(DF_PATH)
 
 
@@ -34,4 +34,4 @@ def predict():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)

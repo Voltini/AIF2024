@@ -1,0 +1,14 @@
+version: '3.6'
+
+services:
+  api:
+    build:
+      dockerfile: api.dockerfile
+    ports:
+      - 5000:5000
+    
+  webapp:
+    build:
+      dockerfile: webapp.dockerfile
+    ports:
+      - 80:80

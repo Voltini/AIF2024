@@ -1,7 +1,6 @@
 import torchvision.models as models
 import torch
 import pandas as pd
-from tqdm.notebook import tqdm
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 from torchvision import datasets
@@ -21,7 +20,9 @@ class ImageAndPathsDataset(datasets.ImageFolder):
 
 
 def create_model():
-    mobilenet = models.mobilenet_v3_small()
+    mobilenet = models.mobilenet_v3_small(
+        weights=models.MobileNet_V3_Small_Weights.IMAGENET1K_V1
+    )
     model = torch.nn.Sequential(
         mobilenet.features, mobilenet.avgpool, torch.nn.Flatten()
     ).to(device)
@@ -47,7 +48,7 @@ def create_annoy_db():
     paths_list = []
     with open("model.pth", "rb") as model_file:
         model = torch.load(model_file)
-    for x, paths in tqdm(dataloader):
+    for x, paths in dataloader:
         with torch.no_grad():
             embeddings = model(x.to(device))
             features_list.extend(embeddings.cpu().numpy())
@@ -72,30 +73,5 @@ def search(df, annoy_index, query_vector, k=5):
 
 
 if __name__ == "__main__":
-    dataset = ImageAndPathsDataset("../MLP-20M", transform())
-    dataloader = DataLoader(
-        dataset, batch_size=128, num_workers=2, shuffle=False
-    )
-    mobilenet = models.mobilenet_v3_small()
-    model = torch.nn.Sequential(
-        mobilenet.features, mobilenet.avgpool, torch.nn.Flatten()
-    ).to(device)
-    torch.save(model, "model.pth")
-    features_list = []
-    paths_list = []
-    for x, paths in tqdm(dataloader):
-        with torch.no_grad():
-            embeddings = model(x.to(device))
-            features_list.extend(embeddings.cpu().numpy())
-            paths_list.extend(paths)
-
-    df = pd.DataFrame({"features": features_list, "path": paths_list})
-    df.to_pickle("feature-path.pickle")
-
-    dim = 576
-    annoy_index = AnnoyIndex(dim, "angular")
-    for i, embedding in enumerate(features_list):
-        annoy_index.add_item(i, embedding)
-
-    annoy_index.build(10)
-    annoy_index.save("annoy_index.ann")
+    create_model()
+    create_annoy_db()
