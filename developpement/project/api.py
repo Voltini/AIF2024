@@ -1,11 +1,10 @@
 from flask import Flask, jsonify, request
-import pandas as pd
 from PIL import Image
 import torch
 import io
-import model as model
+import helpers as helpers
 from annoy import AnnoyIndex
-from model import search
+from helpers import search
 
 device = torch.device("cpu")
 
@@ -16,9 +15,8 @@ DF_PATH = "./feature-path.pickle"
 
 index = AnnoyIndex(576, "angular")
 index.load(INDEX_PATH)
-transform = model.transform()
+transform = helpers.transform()
 model = torch.load(MODEL_PATH, map_location=torch.device("cpu"))
-df = pd.read_pickle(DF_PATH)
 
 
 @app.route("/predict", methods=["POST"])
@@ -29,7 +27,7 @@ def predict():
     tensor = tensor.unsqueeze(0)
     with torch.no_grad():
         outputs = model(tensor).squeeze()
-    pred = search(df, index, outputs)
+    pred = search(index, outputs)
     return jsonify(pred)
 
 

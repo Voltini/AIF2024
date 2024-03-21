@@ -8,5 +8,6 @@ RUN kaggle datasets download "ghrzarea/movielens-20m-posters-for-machine-learnin
 EXPOSE 80
 WORKDIR /app
 COPY webapp.py /app/webapp.py
+ADD https://drive.google.com/uc?export=download&id=1hWsOTci3ZovpA4QSPUOO_cZ53QqVzXzJ /app/feature-path.pickle 
 
 CMD [ "python", "webapp.py" ]

@@ -1,22 +1,11 @@
-import torchvision.models as models
 import torch
+import torchvision.models as models
 import pandas as pd
-from torch.utils.data import DataLoader
-import torchvision.transforms as transforms
-from torchvision import datasets
+
 from annoy import AnnoyIndex
-
+from torch.utils.data import DataLoader
+from helpers import ImageAndPathsDataset, transform
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
-class ImageAndPathsDataset(datasets.ImageFolder):
-    def __getitem__(self, index):
-        img, _ = super(ImageAndPathsDataset, self).__getitem__(index)
-        path = self.imgs[index][0]
-        return img, path
-
-    def __len__(self) -> int:
-        return super().__len__()
 
 
 def create_model():
@@ -27,16 +16,6 @@ def create_model():
         mobilenet.features, mobilenet.avgpool, torch.nn.Flatten()
     ).to(device)
     torch.save(model, "model.pth")
-
-
-def transform():
-    mean = [0.485, 0.456, 0.406]
-    std = [0.229, 0.224, 0.225]
-    normalize = transforms.Normalize(mean, std)
-    transform = transforms.Compose(
-        [transforms.Resize((224, 224)), transforms.ToTensor(), normalize]
-    )
-    return transform
 
 
 def create_annoy_db():
@@ -64,12 +43,6 @@ def create_annoy_db():
 
     annoy_index.build(10)
     annoy_index.save("annoy_index.ann")
-
-
-def search(df, annoy_index, query_vector, k=5):
-    indices = annoy_index.get_nns_by_vector(query_vector, k)
-    paths = df["path"][indices]
-    return paths.tolist()
 
 
 if __name__ == "__main__":

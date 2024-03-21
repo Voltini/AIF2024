@@ -2,3 +2,4 @@ gradio==3.39.0
 matplotlib==3.8.3
 pillow==10.2.0
 kaggle==1.6.6
+pandas==2.0.3

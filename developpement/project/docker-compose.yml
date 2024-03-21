@@ -12,3 +12,5 @@ services:
       dockerfile: webapp.dockerfile
     ports:
       - 80:80
+    depends_on:
+      - api
