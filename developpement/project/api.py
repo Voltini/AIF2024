@@ -10,13 +10,13 @@ device = torch.device("cpu")
 
 app = Flask(__name__)
 MODEL_PATH = "model.pth"
-INDEX_PATH = "annoy_index.ann"
+INDEX_PATH = "rec_imdb.ann"
 DF_PATH = "./feature-path.pickle"
 
 index = AnnoyIndex(576, "angular")
 index.load(INDEX_PATH)
 transform = helpers.transform()
-model = torch.load(MODEL_PATH, map_location=torch.device("cpu"))
+model = torch.load(MODEL_PATH, map_location=torch.device("cpu")).eval()
 
 
 @app.route("/predict", methods=["POST"])
