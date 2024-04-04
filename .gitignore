@@ -12,3 +12,4 @@ flagged/
 *.ann
 
 kaggle.json
+glove*
