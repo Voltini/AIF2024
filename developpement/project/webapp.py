@@ -15,7 +15,7 @@ def process_image(image):
     image.save(img_binary, format="PNG")
 
     response = requests.post(
-        "http://api:5000/predict", data=img_binary.getvalue()
+        "http://api:5001/predict_image", data=img_binary.getvalue()
     )
     if response.status_code == 200:
         indices = response.json()
