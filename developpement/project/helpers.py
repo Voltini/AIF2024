@@ -1,8 +1,6 @@
-import torchvision.transforms as transforms
+from typing import Any
 from torchvision import datasets
 from torch.utils.data import Dataset
-from transformers import DistilBertForSequenceClassification, DistilBertTokenizerFast
-import torch
 
 
 class ImageAndPathsDataset(datasets.ImageFolder):
@@ -15,34 +13,23 @@ class ImageAndPathsDataset(datasets.ImageFolder):
         return super().__len__()
 
 
-class NlpDataset(Dataset):
-    def __init__(self, data, labels, tokenizer):
-        self.data = data.to_list()
-        self.labels = labels.tolist()
-        self.encodings = tokenizer(self.data, truncation=True, padding=True)
+class Embedder:
+    model: Any
+    preprocessor: Any
+    dataset: Dataset
+    dim: int
 
-    def __getitem__(self, idx):
-        item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
-        item["labels"] = torch.tensor(self.labels[idx], dtype=torch.long)
-        return item
+    def prepare(self): ...
 
-    def __len__(self):
-        return len(self.labels)
+    def __call__(self, inputs):
+        self.model(inputs)
 
+    @classmethod
+    def load_pretrained(cls, path): ...
 
-def transform():
-    mean = [0.485, 0.456, 0.406]
-    std = [0.229, 0.224, 0.225]
-    normalize = transforms.Normalize(mean, std)
-    transform = transforms.Compose(
-        [transforms.Resize((224, 224)), transforms.ToTensor(), normalize]
-    )
-    return transform
+    def save(self, path): ...
 
-
-def tokenizer():
-    tokenizer = DistilBertTokenizerFast.from_pretrained("distilbert-base-uncased")
-    return tokenizer
+    def create_annoy_db(self, path, *args): ...
 
 
 def search(annoy_index, query_vector, k=5):
